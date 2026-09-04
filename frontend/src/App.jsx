@@ -169,46 +169,62 @@ const refreshMarket = async () => {
   setMarketError("");
 
   try {
-    const updatedStocks = [];
-
-    for (const stock of watchlist) {
-      const response = await fetch(
-        `http://localhost:5000/api/watchlist/${stock.symbol}/refresh`,
-        {
-          method: "POST",
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        console.error(
-          `Failed to refresh ${stock.symbol}:`,
-          data.message
+    // Refresh every stock one by one
+    const refreshResults = await Promise.all(
+      watchlist.map(async (stock) => {
+        const response = await fetch(
+          `http://localhost:5000/api/watchlist/${stock.symbol}/refresh`,
+          {
+            method: "POST",
+          }
         );
-        continue;
-      }
 
-      updatedStocks.push(data.stock);
-    }
+        if (!response.ok) {
+          throw new Error(`Failed to refresh ${stock.symbol}`);
+        }
 
-    if (updatedStocks.length > 0) {
-  setWatchlist((prev) =>
-    prev.map((oldStock) => {
-      const updatedStock = updatedStocks.find(
-        (stock) => stock.symbol === oldStock.symbol
-      );
+        return response.json();
+      })
+    );
 
-      return updatedStock || oldStock;
-    })
-  );
+    // Update watchlist with fresh market data
+    const updatedStocks = refreshResults.map((result) => result.stock);
 
-  await loadAnalysis(updatedStocks);
-}
+    setWatchlist(updatedStocks);
 
-    console.log("✅ Market data refreshed");
+    // Get fresh analysis for every stock
+    const analysisResults = await Promise.all(
+      updatedStocks.map(async (stock) => {
+        const response = await fetch(
+          `http://localhost:5000/api/watchlist/${stock.symbol}/analysis`
+        );
+
+        if (!response.ok) {
+          throw new Error(`Failed to analyze ${stock.symbol}`);
+        }
+
+        return response.json();
+      })
+    );
+
+    // Convert analysis array into object:
+    // {
+    //   AAPL: {...},
+    //   NVDA: {...}
+    // }
+    const analysisMap = {};
+
+    analysisResults.forEach((result) => {
+      analysisMap[result.symbol] = result;
+    });
+
+    setAnalysis(analysisMap);
   } catch (error) {
     console.error("❌ Market refresh failed:", error);
+
+    setMarketError(
+      "Unable to update some market data. Showing your last known data."
+    );
   } finally {
     setLoadingMarket(false);
   }
