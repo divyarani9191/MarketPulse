@@ -59,7 +59,6 @@ const availableStocks = [
 ];
 
 function App() {
-  // MongoDB se watchlist load hogi
   const [watchlist, setWatchlist] = useState([]);
   const [loadingMarket, setLoadingMarket] = useState(false);
   const [marketError, setMarketError] = useState("");
@@ -68,22 +67,23 @@ function App() {
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
 
-  // Load watchlist from MongoDB when page opens
+  // Load watchlist from MongoDB
   useEffect(() => {
-  fetch("http://localhost:5000/api/watchlist")
-    .then((response) => response.json())
-    .then((data) => {
-      setWatchlist(data);
+    fetch("http://localhost:5000/api/watchlist")
+      .then((response) => response.json())
+      .then((data) => {
+        setWatchlist(data);
 
-      if (data.length > 0) {
-        loadAnalysis(data);
-      }
-    })
-    .catch((error) => {
-      console.error("Error loading watchlist:", error);
-    });
-}, []);
+        if (data.length > 0) {
+          loadAnalysis(data);
+        }
+      })
+      .catch((error) => {
+        console.error("Error loading watchlist:", error);
+      });
+  }, []);
 
+  // Search stocks
   const searchResults = availableStocks.filter((stock) => {
     const query = search.toLowerCase();
 
@@ -93,175 +93,291 @@ function App() {
     );
   });
 
-  // TEMPORARY: Add functionality will be connected to MongoDB in next step
+  // Add stock
   const addStock = async (stock) => {
-  const alreadyAdded = watchlist.some(
-    (item) => item.symbol === stock.symbol
-  );
-
-  if (alreadyAdded) {
-    return;
-  }
-
-  try {
-    const response = await fetch(
-      "http://localhost:5000/api/watchlist",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(stock),
-      }
+    const alreadyAdded = watchlist.some(
+      (item) => item.symbol === stock.symbol
     );
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      console.error("Failed to add stock:", data.message);
+    if (alreadyAdded) {
       return;
     }
 
-    // Add the MongoDB saved stock to React state
-    setWatchlist((prev) => [...prev, data]);
-
-    setSearch("");
-    setShowSearch(false);
-
-    console.log("✅ Stock added to MongoDB:", data);
-  } catch (error) {
-    console.error("❌ Error adding stock:", error);
-  }
-};
-
-  const removeStock = async (symbol) => {
-  try {
-    const response = await fetch(
-      `http://localhost:5000/api/watchlist/${symbol}`,
-      {
-        method: "DELETE",
-      }
-    );
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      console.error("Failed to remove stock:", data.message);
-      return;
-    }
-
-    // Remove from React state after successful MongoDB deletion
-    setWatchlist((prev) =>
-      prev.filter((stock) => stock.symbol !== symbol)
-    );
-
-    console.log("✅ Stock removed from MongoDB:", data);
-  } catch (error) {
-    console.error("❌ Error removing stock:", error);
-  }
-};
-const refreshMarket = async () => {
-  if (watchlist.length === 0) {
-    return;
-  }
-
-  setLoadingMarket(true);
-  setMarketError("");
-
-  try {
-    // Refresh every stock one by one
-    const refreshResults = await Promise.all(
-      watchlist.map(async (stock) => {
-        const response = await fetch(
-          `http://localhost:5000/api/watchlist/${stock.symbol}/refresh`,
-          {
-            method: "POST",
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error(`Failed to refresh ${stock.symbol}`);
-        }
-
-        return response.json();
-      })
-    );
-
-    // Update watchlist with fresh market data
-    const updatedStocks = refreshResults.map((result) => result.stock);
-
-    setWatchlist(updatedStocks);
-
-    // Get fresh analysis for every stock
-    const analysisResults = await Promise.all(
-      updatedStocks.map(async (stock) => {
-        const response = await fetch(
-          `http://localhost:5000/api/watchlist/${stock.symbol}/analysis`
-        );
-
-        if (!response.ok) {
-          throw new Error(`Failed to analyze ${stock.symbol}`);
-        }
-
-        return response.json();
-      })
-    );
-
-    // Convert analysis array into object:
-    // {
-    //   AAPL: {...},
-    //   NVDA: {...}
-    // }
-    const analysisMap = {};
-
-    analysisResults.forEach((result) => {
-      analysisMap[result.symbol] = result;
-    });
-
-    setAnalysis(analysisMap);
-  } catch (error) {
-    console.error("❌ Market refresh failed:", error);
-
-    setMarketError(
-      "Unable to update some market data. Showing your last known data."
-    );
-  } finally {
-    setLoadingMarket(false);
-  }
-};
-const loadAnalysis = async (stocks) => {
-  try {
-    const results = {};
-
-    for (const stock of stocks) {
+    try {
       const response = await fetch(
-        `http://localhost:5000/api/watchlist/${stock.symbol}/analysis`
+        "http://localhost:5000/api/watchlist",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(stock),
+        }
       );
 
       const data = await response.json();
 
-      if (response.ok) {
-        results[stock.symbol] = data;
+      if (!response.ok) {
+        console.error("Failed to add stock:", data.message);
+        return;
       }
+
+      setWatchlist((prev) => [...prev, data]);
+
+      setSearch("");
+      setShowSearch(false);
+
+      console.log("✅ Stock added to MongoDB:", data);
+    } catch (error) {
+      console.error("❌ Error adding stock:", error);
+    }
+  };
+
+  // Remove stock
+  const removeStock = async (symbol) => {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/watchlist/${symbol}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error("Failed to remove stock:", data.message);
+        return;
+      }
+
+      setWatchlist((prev) =>
+        prev.filter((stock) => stock.symbol !== symbol)
+      );
+
+      setAnalysis((prev) => {
+        const updated = { ...prev };
+        delete updated[symbol];
+        return updated;
+      });
+
+      console.log("✅ Stock removed from MongoDB:", data);
+    } catch (error) {
+      console.error("❌ Error removing stock:", error);
+    }
+  };
+
+  // Load analysis for all stocks
+  const loadAnalysis = async (stocks) => {
+    try {
+      const results = {};
+
+      for (const stock of stocks) {
+        const response = await fetch(
+          `http://localhost:5000/api/watchlist/${stock.symbol}/analysis`
+        );
+
+        const data = await response.json();
+
+        if (response.ok) {
+          results[stock.symbol] = data;
+        }
+      }
+
+      setAnalysis(results);
+    } catch (error) {
+      console.error("❌ Error loading analysis:", error);
+
+      setMarketError(
+        "Unable to update market data. Showing your last known data."
+      );
+    }
+  };
+
+  // Refresh market data from Finnhub
+  const refreshMarket = async () => {
+    if (watchlist.length === 0) {
+      return;
     }
 
-    setAnalysis(results);
-  } catch (error) {
-  console.error("❌ Market refresh failed:", error);
+    setLoadingMarket(true);
+    setMarketError("");
 
-  setMarketError(
-    "Unable to update market data. Showing your last known data."
-  );
-}
-};
+    try {
+      const refreshResults = await Promise.all(
+        watchlist.map(async (stock) => {
+          const response = await fetch(
+            `http://localhost:5000/api/watchlist/${stock.symbol}/refresh`,
+            {
+              method: "POST",
+            }
+          );
 
+          if (!response.ok) {
+            throw new Error(`Failed to refresh ${stock.symbol}`);
+          }
+
+          return response.json();
+        })
+      );
+
+      // Update latest market prices
+      const updatedStocks = refreshResults.map(
+        (result) => result.stock
+      );
+
+      setWatchlist(updatedStocks);
+
+      // Get analysis after refresh
+      const analysisResults = await Promise.all(
+        updatedStocks.map(async (stock) => {
+          const response = await fetch(
+            `http://localhost:5000/api/watchlist/${stock.symbol}/analysis`
+          );
+
+          if (!response.ok) {
+            throw new Error(`Failed to analyze ${stock.symbol}`);
+          }
+
+          return response.json();
+        })
+      );
+
+      const analysisMap = {};
+
+      analysisResults.forEach((result) => {
+        analysisMap[result.symbol] = result;
+      });
+
+      setAnalysis(analysisMap);
+    } catch (error) {
+      console.error("❌ Market refresh failed:", error);
+
+      setMarketError(
+        "Unable to update some market data. Showing your last known data."
+      );
+    } finally {
+      setLoadingMarket(false);
+    }
+  };
+
+  // Mark current prices as user's last checked snapshot
+  const saveLastCheck = async (stocks) => {
+    if (stocks.length === 0) {
+      return;
+    }
+
+    try {
+      await Promise.all(
+        stocks.map(async (stock) => {
+          const response = await fetch(
+            `http://localhost:5000/api/watchlist/${stock.symbol}/check`,
+            {
+              method: "POST",
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error(
+              `Failed to save check for ${stock.symbol}`
+            );
+          }
+
+          return response.json();
+        })
+      );
+
+      // Reload watchlist
+      const response = await fetch(
+        "http://localhost:5000/api/watchlist"
+      );
+
+      if (response.ok) {
+        const updatedStocks = await response.json();
+
+        setWatchlist(updatedStocks);
+
+        // Reload analysis
+        await loadAnalysis(updatedStocks);
+      }
+
+      console.log("✅ All stocks marked as checked");
+    } catch (error) {
+      console.error("❌ Error saving last check:", error);
+    }
+  };
+
+  // Stocks needing attention
   const attentionStocks = watchlist.filter(
-  (stock) => analysis[stock.symbol]?.meaningfulChange === true
-);
+    (stock) =>
+      analysis[stock.symbol]?.meaningfulChange === true
+  );
 
- const stableStocks = watchlist.filter(
-  (stock) => analysis[stock.symbol]?.meaningfulChange !== true
-);
+  // Stable stocks
+  const stableStocks = watchlist.filter(
+    (stock) =>
+      analysis[stock.symbol]?.meaningfulChange !== true
+  );
+
+  // Find latest checked stock
+  const getLatestCheckedStock = () => {
+    const checkedStocks = watchlist.filter(
+      (stock) => stock.lastCheckedAt
+    );
+
+    if (checkedStocks.length === 0) {
+      return null;
+    }
+
+    return checkedStocks.reduce((latest, stock) =>
+      new Date(stock.lastCheckedAt) >
+      new Date(latest.lastCheckedAt)
+        ? stock
+        : latest
+    );
+  };
+
+  // Format last checked time
+  const getLastUpdatedText = () => {
+    const latestStock = getLatestCheckedStock();
+
+    if (!latestStock) {
+      return {
+        time: "--",
+        symbol: "Not checked yet",
+      };
+    }
+
+    const checkedTime = new Date(latestStock.lastCheckedAt);
+    const now = new Date();
+
+    const diffMinutes = Math.floor(
+      (now - checkedTime) / (1000 * 60)
+    );
+
+    let timeText;
+
+    if (diffMinutes < 1) {
+      timeText = "Just now";
+    } else if (diffMinutes === 1) {
+      timeText = "1 min ago";
+    } else if (diffMinutes < 60) {
+      timeText = `${diffMinutes} mins ago`;
+    } else {
+      const diffHours = Math.floor(diffMinutes / 60);
+
+      timeText =
+        diffHours === 1
+          ? "1 hour ago"
+          : `${diffHours} hours ago`;
+    }
+
+    return {
+      time: timeText,
+      symbol: `${latestStock.symbol} last checked`,
+    };
+  };
+
+  const lastUpdated = getLastUpdatedText();
 
   return (
     <div className="app">
@@ -290,13 +406,15 @@ const loadAnalysis = async (stocks) => {
       {/* Main */}
       <main className="main-content">
 
+        {/* Error message */}
+        {marketError && (
+          <div className="market-error">
+            ⚠ {marketError}
+          </div>
+        )}
+
         {/* Header */}
         <section className="page-header">
-          {marketError && (
-  <div className="market-error">
-    ⚠ {marketError}
-  </div>
-)}
 
           <div>
 
@@ -316,26 +434,38 @@ const loadAnalysis = async (stocks) => {
 
           <div className="header-buttons">
 
-  <button
-    className="refresh-button"
-    onClick={refreshMarket}
-    disabled={loadingMarket || watchlist.length === 0}
-  >
-    {loadingMarket ? "↻ Refreshing..." : "↻ Refresh Market"}
-  </button>
+            <button
+              className="refresh-button"
+              onClick={refreshMarket}
+              disabled={
+                loadingMarket || watchlist.length === 0
+              }
+            >
+              {loadingMarket
+                ? "↻ Refreshing..."
+                : "↻ Refresh Market"}
+            </button>
 
-  <button
-    className="add-button"
-    onClick={() => setShowSearch(!showSearch)}
-  >
-    + Add Stock
-  </button>
+            <button
+              className="check-button"
+              onClick={() => saveLastCheck(watchlist)}
+              disabled={watchlist.length === 0}
+            >
+              ✓ Mark as Checked
+            </button>
 
-</div>
+            <button
+              className="add-button"
+              onClick={() => setShowSearch(!showSearch)}
+            >
+              + Add Stock
+            </button>
+
+          </div>
 
         </section>
 
-        {/* Search Box */}
+        {/* Search */}
         {showSearch && (
           <section className="search-section">
 
@@ -367,6 +497,7 @@ const loadAnalysis = async (stocks) => {
               <div className="search-results">
 
                 {searchResults.length > 0 ? (
+
                   searchResults.map((stock) => {
 
                     const alreadyAdded = watchlist.some(
@@ -408,16 +539,21 @@ const loadAnalysis = async (stocks) => {
                           disabled={alreadyAdded}
                           onClick={() => addStock(stock)}
                         >
-                          {alreadyAdded ? "Added ✓" : "Add"}
+                          {alreadyAdded
+                            ? "Added ✓"
+                            : "Add"}
                         </button>
 
                       </div>
                     );
                   })
+
                 ) : (
+
                   <div className="no-results">
                     No stocks found.
                   </div>
+
                 )}
 
               </div>
@@ -429,6 +565,7 @@ const loadAnalysis = async (stocks) => {
         {/* Summary */}
         <section className="summary-grid">
 
+          {/* TOTAL STOCKS */}
           <div className="summary-card">
 
             <p>Total Stocks</p>
@@ -439,6 +576,7 @@ const loadAnalysis = async (stocks) => {
 
           </div>
 
+          {/* NEEDS ATTENTION */}
           <div className="summary-card attention">
 
             <p>Needs Attention</p>
@@ -449,20 +587,22 @@ const loadAnalysis = async (stocks) => {
 
           </div>
 
+          {/* LAST UPDATED */}
           <div className="summary-card">
 
             <p>Last Updated</p>
 
-            <h2>2m</h2>
+            <h2>{lastUpdated.time}</h2>
 
-            <span>Just now</span>
+            <span>{lastUpdated.symbol}</span>
 
           </div>
 
         </section>
 
-        {/* Attention */}
+        {/* NEEDS ATTENTION */}
         {attentionStocks.length > 0 && (
+
           <section className="section">
 
             <div className="section-heading">
@@ -490,6 +630,7 @@ const loadAnalysis = async (stocks) => {
                 key={stock.symbol}
               >
 
+                {/* Stock information */}
                 <div className="stock-main">
 
                   <div
@@ -510,10 +651,11 @@ const loadAnalysis = async (stocks) => {
 
                 </div>
 
+                {/* Price */}
                 <div className="stock-price">
 
                   <strong>
-                    ${stock.price.toFixed(2)}
+                    ${Number(stock.price).toFixed(2)}
                   </strong>
 
                   <span
@@ -529,52 +671,64 @@ const loadAnalysis = async (stocks) => {
 
                 </div>
 
+                {/* Change information */}
                 <div className="change-info">
 
-  <span
-    className={
-      analysis[stock.symbol]?.direction === "up"
-        ? "change-icon"
-        : "change-icon down"
-    }
-  >
-    {analysis[stock.symbol]?.direction === "up" ? "↑" : "↓"}
-  </span>
+                  <span
+                    className={
+                      analysis[stock.symbol]?.direction === "up"
+                        ? "change-icon"
+                        : "change-icon down"
+                    }
+                  >
+                    {analysis[stock.symbol]?.direction === "up"
+                      ? "↑"
+                      : "↓"}
+                  </span>
 
-  <div>
+                  <div>
 
-    <strong>Significant change</strong>
+                    <strong>
+                      Significant change
+                    </strong>
 
-    <p>
-      {analysis[stock.symbol]?.direction === "up"
-        ? "Up "
-        : "Down "}
+                    <p>
 
-      {Math.abs(
-        analysis[stock.symbol]?.priceChangePercent ?? stock.change
-      ).toFixed(2)}
+                      {analysis[stock.symbol]?.direction === "up"
+                        ? "Up "
+                        : "Down "}
 
-      % since your last check
-    </p>
+                      {Math.abs(
+                        analysis[stock.symbol]
+                          ?.priceChangePercent ??
+                          stock.change
+                      ).toFixed(2)}
 
-  </div>
+                      % since your last check
 
-</div>
+                    </p>
 
+                  </div>
+
+                </div>
+
+                {/* Attention score */}
                 <div className="attention-score">
 
                   <span>Attention</span>
 
                   <strong>
-  {Math.min(
-    100,
-    Math.round(
-      Math.abs(
-        analysis[stock.symbol]?.priceChangePercent ?? stock.change
-      ) * 20
-    )
-  )}
-</strong>
+                    {Math.min(
+                      100,
+                      Math.round(
+                        Math.abs(
+                          analysis[stock.symbol]
+                            ?.priceChangePercent ??
+                            stock.change
+                        ) * 20
+                      )
+                    )}
+                  </strong>
 
                 </div>
 
@@ -585,7 +739,7 @@ const loadAnalysis = async (stocks) => {
           </section>
         )}
 
-        {/* Watchlist */}
+        {/* WATCHLIST */}
         <section className="section">
 
           <div className="section-heading">
@@ -630,7 +784,7 @@ const loadAnalysis = async (stocks) => {
                   <div className="mini-price">
 
                     <strong>
-                      ${stock.price.toFixed(2)}
+                      ${Number(stock.price).toFixed(2)}
                     </strong>
 
                     <span
@@ -648,7 +802,9 @@ const loadAnalysis = async (stocks) => {
 
                   <button
                     className="remove-button"
-                    onClick={() => removeStock(stock.symbol)}
+                    onClick={() =>
+                      removeStock(stock.symbol)
+                    }
                     title="Remove from watchlist"
                   >
                     ×
