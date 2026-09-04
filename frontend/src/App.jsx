@@ -195,16 +195,17 @@ function App() {
 
   // Refresh market data from Finnhub
   const refreshMarket = async () => {
-    if (watchlist.length === 0) {
-      return;
-    }
+  if (watchlist.length === 0) {
+    return;
+  }
 
-    setLoadingMarket(true);
-    setMarketError("");
+  setLoadingMarket(true);
+  setMarketError("");
 
-    try {
-      const refreshResults = await Promise.all(
-        watchlist.map(async (stock) => {
+  try {
+    const refreshResults = await Promise.all(
+      watchlist.map(async (stock) => {
+        try {
           const response = await fetch(
             `http://localhost:5000/api/watchlist/${stock.symbol}/refresh`,
             {
@@ -212,53 +213,91 @@ function App() {
             }
           );
 
+          const data = await response.json();
+
           if (!response.ok) {
-            throw new Error(`Failed to refresh ${stock.symbol}`);
+            throw new Error(
+              data.message || `Failed to refresh ${stock.symbol}`
+            );
           }
 
-          return response.json();
-        })
+          return data;
+        } catch (error) {
+          console.error(
+            `❌ Failed to refresh ${stock.symbol}:`,
+            error.message
+          );
+
+          // Keep the old stock data if one stock fails
+          return {
+            stock,
+            error: true,
+          };
+        }
+      })
+    );
+
+    // Keep successful updates + old data for failed stocks
+    const updatedStocks = refreshResults.map(
+      (result) => result.stock
+    );
+
+    setWatchlist(updatedStocks);
+
+    // Check whether any stock failed
+    const failedStocks = refreshResults.filter(
+      (result) => result.error
+    );
+
+    if (failedStocks.length > 0) {
+      setMarketError(
+        "Unable to update some market data. Showing your last known data."
       );
+    }
 
-      // Update latest market prices
-      const updatedStocks = refreshResults.map(
-        (result) => result.stock
-      );
-
-      setWatchlist(updatedStocks);
-
-      // Get analysis after refresh
-      const analysisResults = await Promise.all(
-        updatedStocks.map(async (stock) => {
+    // Load analysis for all stocks
+    const analysisResults = await Promise.all(
+      updatedStocks.map(async (stock) => {
+        try {
           const response = await fetch(
             `http://localhost:5000/api/watchlist/${stock.symbol}/analysis`
           );
 
           if (!response.ok) {
-            throw new Error(`Failed to analyze ${stock.symbol}`);
+            return null;
           }
 
-          return response.json();
-        })
-      );
+          return await response.json();
+        } catch (error) {
+          console.error(
+            `❌ Analysis failed for ${stock.symbol}:`,
+            error.message
+          );
 
-      const analysisMap = {};
+          return null;
+        }
+      })
+    );
 
-      analysisResults.forEach((result) => {
+    const analysisMap = {};
+
+    analysisResults.forEach((result) => {
+      if (result) {
         analysisMap[result.symbol] = result;
-      });
+      }
+    });
 
-      setAnalysis(analysisMap);
-    } catch (error) {
-      console.error("❌ Market refresh failed:", error);
+    setAnalysis(analysisMap);
+  } catch (error) {
+    console.error("❌ Market refresh failed:", error);
 
-      setMarketError(
-        "Unable to update some market data. Showing your last known data."
-      );
-    } finally {
-      setLoadingMarket(false);
-    }
-  };
+    setMarketError(
+      "Unable to update market data. Showing your last known data."
+    );
+  } finally {
+    setLoadingMarket(false);
+  }
+};
 
   // Mark current prices as user's last checked snapshot
   const saveLastCheck = async (stocks) => {
@@ -740,6 +779,12 @@ function App() {
         )}
 
         {/* WATCHLIST */}
+        {/* Market Data Status */}
+{watchlist.some((stock) => stock.marketDataStale) && (
+  <div className="market-stale-warning">
+    ⚠ Some market data may be delayed or unavailable.
+  </div>
+)}
         <section className="section">
 
           <div className="section-heading">
@@ -751,6 +796,11 @@ function App() {
               <p>
                 Other stocks you're tracking.
               </p>
+              {watchlist.some((stock) => stock.marketDataStale) && (
+  <div className="market-stale-warning">
+    ⚠ Some market data may be delayed or unavailable.
+  </div>
+)}
 
             </div>
 
@@ -783,22 +833,32 @@ function App() {
 
                   <div className="mini-price">
 
-                    <strong>
-                      ${Number(stock.price).toFixed(2)}
-                    </strong>
+  <strong>
+    ${stock.price.toFixed(2)}
+  </strong>
 
-                    <span
-                      className={
-                        stock.change >= 0
-                          ? "positive"
-                          : "negative"
-                      }
-                    >
-                      {stock.change >= 0 ? "+" : ""}
-                      {stock.change}%
-                    </span>
+  <span
+    className={
+      stock.change >= 0
+        ? "positive"
+        : "negative"
+    }
+  >
+    {stock.change >= 0 ? "+" : ""}
+    {stock.change}%
+  </span>
 
-                  </div>
+  {stock.marketUpdatedAt && (
+    <small className="market-updated">
+      Updated{" "}
+      {new Date(stock.marketUpdatedAt).toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      })}
+    </small>
+  )}
+
+</div>
 
                   <button
                     className="remove-button"

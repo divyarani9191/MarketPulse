@@ -44,6 +44,15 @@ lastCheckedAt: {
   default: null,
 },
 
+marketUpdatedAt: {
+  type: Date,
+  default: null,
+},
+
+marketDataStale: {
+  type: Boolean,
+  default: false,
+},
 
 logo: {
       type: String,
