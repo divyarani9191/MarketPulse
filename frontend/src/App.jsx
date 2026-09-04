@@ -62,6 +62,7 @@ function App() {
   // MongoDB se watchlist load hogi
   const [watchlist, setWatchlist] = useState([]);
   const [loadingMarket, setLoadingMarket] = useState(false);
+  const [marketError, setMarketError] = useState("");
   const [analysis, setAnalysis] = useState({});
 
   const [search, setSearch] = useState("");
@@ -165,6 +166,7 @@ const refreshMarket = async () => {
   }
 
   setLoadingMarket(true);
+  setMarketError("");
 
   try {
     const updatedStocks = [];
@@ -229,8 +231,12 @@ const loadAnalysis = async (stocks) => {
 
     setAnalysis(results);
   } catch (error) {
-    console.error("❌ Error loading analysis:", error);
-  }
+  console.error("❌ Market refresh failed:", error);
+
+  setMarketError(
+    "Unable to update market data. Showing your last known data."
+  );
+}
 };
 
   const attentionStocks = watchlist.filter(
@@ -270,6 +276,11 @@ const loadAnalysis = async (stocks) => {
 
         {/* Header */}
         <section className="page-header">
+          {marketError && (
+  <div className="market-error">
+    ⚠ {marketError}
+  </div>
+)}
 
           <div>
 
