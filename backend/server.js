@@ -116,3 +116,147 @@ app.delete("/api/watchlist/:symbol", async (req, res) => {
     });
   }
 });
+// Save current stock data as the user's last checked snapshot
+app.post("/api/watchlist/:symbol/check", async (req, res) => {
+  try {
+    const { symbol } = req.params;
+
+    const stock = await Watchlist.findOne({
+      symbol: symbol.toUpperCase(),
+    });
+
+    if (!stock) {
+      return res.status(404).json({
+        message: "Stock not found",
+      });
+    }
+
+    // Save the current values as the previous snapshot
+    stock.previousPrice = stock.price;
+    stock.previousChange = stock.change;
+    stock.lastCheckedAt = new Date();
+
+    await stock.save();
+
+    res.json({
+      message: "Stock snapshot saved successfully",
+      stock,
+    });
+  } catch (error) {
+    console.error("Error saving stock snapshot:", error.message);
+
+    res.status(500).json({
+      message: "Failed to save stock snapshot",
+    });
+  }
+});
+// Analyze whether a stock has meaningfully changed
+app.get("/api/watchlist/:symbol/analysis", async (req, res) => {
+  try {
+    const { symbol } = req.params;
+
+    const stock = await Watchlist.findOne({
+      symbol: symbol.toUpperCase(),
+    });
+
+    if (!stock) {
+      return res.status(404).json({
+        message: "Stock not found",
+      });
+    }
+
+    // If there is no previous snapshot yet
+    if (stock.previousPrice === null) {
+      return res.json({
+        symbol: stock.symbol,
+        hasPreviousSnapshot: false,
+        meaningfulChange: false,
+        message: "No previous visit data available yet.",
+      });
+    }
+
+    const priceDifference = stock.price - stock.previousPrice;
+
+    const priceChangePercent =
+      (priceDifference / stock.previousPrice) * 100;
+
+    const meaningfulChange =
+      Math.abs(priceChangePercent) >= 3;
+
+    let direction = "stable";
+
+    if (priceChangePercent > 0) {
+      direction = "up";
+    } else if (priceChangePercent < 0) {
+      direction = "down";
+    }
+
+    res.json({
+      symbol: stock.symbol,
+      currentPrice: stock.price,
+      previousPrice: stock.previousPrice,
+      priceDifference: Number(priceDifference.toFixed(2)),
+      priceChangePercent: Number(priceChangePercent.toFixed(2)),
+      direction,
+      meaningfulChange,
+      lastCheckedAt: stock.lastCheckedAt,
+      message: meaningfulChange
+        ? `${stock.symbol} has changed meaningfully since your last check.`
+        : `${stock.symbol} has not changed significantly since your last check.`,
+    });
+  } catch (error) {
+    console.error("Error analyzing stock:", error.message);
+
+    res.status(500).json({
+      message: "Failed to analyze stock",
+    });
+  }
+});
+// Demo market refresh
+// Simulates a new market price so we can test
+// "meaningful change since last check".
+app.post("/api/watchlist/:symbol/refresh", async (req, res) => {
+  try {
+    const { symbol } = req.params;
+
+    const stock = await Watchlist.findOne({
+      symbol: symbol.toUpperCase(),
+    });
+
+    if (!stock) {
+      return res.status(404).json({
+        message: "Stock not found",
+      });
+    }
+
+    // Keep current price as the previous price
+    stock.previousPrice = stock.price;
+    stock.previousChange = stock.change;
+
+    // Simulate a market movement between -5% and +5%
+    const movement = (Math.random() * 10 - 5) / 100;
+
+    const newPrice = stock.price * (1 + movement);
+
+    // Calculate percentage movement
+    const newChange = movement * 100;
+
+    stock.price = Number(newPrice.toFixed(2));
+    stock.change = Number(newChange.toFixed(2));
+
+    stock.lastCheckedAt = new Date();
+
+    await stock.save();
+
+    res.json({
+      message: "Market data refreshed successfully",
+      stock,
+    });
+  } catch (error) {
+    console.error("Error refreshing market data:", error.message);
+
+    res.status(500).json({
+      message: "Failed to refresh market data",
+    });
+  }
+});

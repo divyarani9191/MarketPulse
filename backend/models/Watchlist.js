@@ -25,11 +25,27 @@ const watchlistSchema = new mongoose.Schema(
     },
 
     change: {
-      type: Number,
-      required: true,
-    },
+  type: Number,
+  required: true,
+},
 
-    logo: {
+previousPrice: {
+  type: Number,
+  default: null,
+},
+
+previousChange: {
+  type: Number,
+  default: null,
+},
+
+lastCheckedAt: {
+  type: Date,
+  default: null,
+},
+
+
+logo: {
       type: String,
       required: true,
     },

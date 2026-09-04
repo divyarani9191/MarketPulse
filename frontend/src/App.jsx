@@ -61,21 +61,27 @@ const availableStocks = [
 function App() {
   // MongoDB se watchlist load hogi
   const [watchlist, setWatchlist] = useState([]);
+  const [loadingMarket, setLoadingMarket] = useState(false);
+  const [analysis, setAnalysis] = useState({});
 
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
 
   // Load watchlist from MongoDB when page opens
   useEffect(() => {
-    fetch("http://localhost:5000/api/watchlist")
-      .then((response) => response.json())
-      .then((data) => {
-        setWatchlist(data);
-      })
-      .catch((error) => {
-        console.error("Error loading watchlist:", error);
-      });
-  }, []);
+  fetch("http://localhost:5000/api/watchlist")
+    .then((response) => response.json())
+    .then((data) => {
+      setWatchlist(data);
+
+      if (data.length > 0) {
+        loadAnalysis(data);
+      }
+    })
+    .catch((error) => {
+      console.error("Error loading watchlist:", error);
+    });
+}, []);
 
   const searchResults = availableStocks.filter((stock) => {
     const query = search.toLowerCase();
@@ -153,14 +159,87 @@ function App() {
     console.error("❌ Error removing stock:", error);
   }
 };
+const refreshMarket = async () => {
+  if (watchlist.length === 0) {
+    return;
+  }
+
+  setLoadingMarket(true);
+
+  try {
+    const updatedStocks = [];
+
+    for (const stock of watchlist) {
+      const response = await fetch(
+        `http://localhost:5000/api/watchlist/${stock.symbol}/refresh`,
+        {
+          method: "POST",
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error(
+          `Failed to refresh ${stock.symbol}:`,
+          data.message
+        );
+        continue;
+      }
+
+      updatedStocks.push(data.stock);
+    }
+
+    if (updatedStocks.length > 0) {
+  setWatchlist((prev) =>
+    prev.map((oldStock) => {
+      const updatedStock = updatedStocks.find(
+        (stock) => stock.symbol === oldStock.symbol
+      );
+
+      return updatedStock || oldStock;
+    })
+  );
+
+  await loadAnalysis(updatedStocks);
+}
+
+    console.log("✅ Market data refreshed");
+  } catch (error) {
+    console.error("❌ Market refresh failed:", error);
+  } finally {
+    setLoadingMarket(false);
+  }
+};
+const loadAnalysis = async (stocks) => {
+  try {
+    const results = {};
+
+    for (const stock of stocks) {
+      const response = await fetch(
+        `http://localhost:5000/api/watchlist/${stock.symbol}/analysis`
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        results[stock.symbol] = data;
+      }
+    }
+
+    setAnalysis(results);
+  } catch (error) {
+    console.error("❌ Error loading analysis:", error);
+  }
+};
 
   const attentionStocks = watchlist.filter(
-    (stock) => Math.abs(stock.change) >= 3
-  );
+  (stock) => analysis[stock.symbol]?.meaningfulChange === true
+);
 
-  const stableStocks = watchlist.filter(
-    (stock) => Math.abs(stock.change) < 3
-  );
+ const stableStocks = watchlist.filter(
+  (stock) => analysis[stock.symbol]?.meaningfulChange !== true
+);
 
   return (
     <div className="app">
@@ -208,12 +287,24 @@ function App() {
 
           </div>
 
-          <button
-            className="add-button"
-            onClick={() => setShowSearch(!showSearch)}
-          >
-            + Add Stock
-          </button>
+          <div className="header-buttons">
+
+  <button
+    className="refresh-button"
+    onClick={refreshMarket}
+    disabled={loadingMarket || watchlist.length === 0}
+  >
+    {loadingMarket ? "↻ Refreshing..." : "↻ Refresh Market"}
+  </button>
+
+  <button
+    className="add-button"
+    onClick={() => setShowSearch(!showSearch)}
+  >
+    + Add Stock
+  </button>
+
+</div>
 
         </section>
 
@@ -413,39 +504,50 @@ function App() {
 
                 <div className="change-info">
 
-                  <span
-                    className={
-                      stock.change >= 0
-                        ? "change-icon"
-                        : "change-icon down"
-                    }
-                  >
-                    {stock.change >= 0 ? "↑" : "↓"}
-                  </span>
+  <span
+    className={
+      analysis[stock.symbol]?.direction === "up"
+        ? "change-icon"
+        : "change-icon down"
+    }
+  >
+    {analysis[stock.symbol]?.direction === "up" ? "↑" : "↓"}
+  </span>
 
-                  <div>
+  <div>
 
-                    <strong>Significant change</strong>
+    <strong>Significant change</strong>
 
-                    <p>
-                      {stock.change >= 0 ? "Up " : "Down "}
-                      {Math.abs(stock.change)}% since your last visit
-                    </p>
+    <p>
+      {analysis[stock.symbol]?.direction === "up"
+        ? "Up "
+        : "Down "}
 
-                  </div>
+      {Math.abs(
+        analysis[stock.symbol]?.priceChangePercent ?? stock.change
+      ).toFixed(2)}
 
-                </div>
+      % since your last check
+    </p>
+
+  </div>
+
+</div>
 
                 <div className="attention-score">
 
                   <span>Attention</span>
 
                   <strong>
-                    {Math.min(
-                      100,
-                      Math.round(Math.abs(stock.change) * 20)
-                    )}
-                  </strong>
+  {Math.min(
+    100,
+    Math.round(
+      Math.abs(
+        analysis[stock.symbol]?.priceChangePercent ?? stock.change
+      ) * 20
+    )
+  )}
+</strong>
 
                 </div>
 
