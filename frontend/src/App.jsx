@@ -445,7 +445,7 @@ function App() {
 
           <span className="market-status">
             <span className="status-dot"></span>
-            Market Open
+             Live Market Data
           </span>
 
           <div className="profile">D</div>
@@ -474,7 +474,7 @@ function App() {
             </p>
 
             <h1>
-              {greeting} 👋
+              {greeting}
             </h1>
 
             <p className="subtitle">
@@ -808,11 +808,6 @@ function App() {
               <p>
                 Other stocks you're tracking.
               </p>
-              {watchlist.some((stock) => stock.marketDataStale) && (
-  <div className="market-stale-warning">
-    ⚠ Some market data may be delayed or unavailable.
-  </div>
-)}
 
             </div>
 
