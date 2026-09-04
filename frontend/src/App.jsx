@@ -81,7 +81,7 @@ function App() {
 
   // Load watchlist from MongoDB
   useEffect(() => {
-    fetch("http://localhost:5000/api/watchlist")
+    fetch("https://marketpulse-7ngo.onrender.com/api/watchlist")
       .then((response) => response.json())
       .then((data) => {
         setWatchlist(data);
@@ -117,7 +117,7 @@ function App() {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/watchlist",
+        "https://marketpulse-7ngo.onrender.com/api/watchlist",
         {
           method: "POST",
           headers: {
@@ -149,7 +149,7 @@ function App() {
   const removeStock = async (symbol) => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/watchlist/${symbol}`,
+        `https://marketpulse-7ngo.onrender.com/api/watchlist/${symbol}`,
         {
           method: "DELETE",
         }
@@ -185,7 +185,7 @@ function App() {
 
       for (const stock of stocks) {
         const response = await fetch(
-          `http://localhost:5000/api/watchlist/${stock.symbol}/analysis`
+          `https://marketpulse-7ngo.onrender.com/api/watchlist/${stock.symbol}/analysis`
         );
 
         const data = await response.json();
@@ -219,7 +219,7 @@ function App() {
       watchlist.map(async (stock) => {
         try {
           const response = await fetch(
-            `http://localhost:5000/api/watchlist/${stock.symbol}/refresh`,
+            `https://marketpulse-7ngo.onrender.com/api/watchlist/${stock.symbol}/refresh`,
             {
               method: "POST",
             }
@@ -272,7 +272,7 @@ function App() {
       updatedStocks.map(async (stock) => {
         try {
           const response = await fetch(
-            `http://localhost:5000/api/watchlist/${stock.symbol}/analysis`
+            `https://marketpulse-7ngo.onrender.com/api/watchlist/${stock.symbol}/analysis`
           );
 
           if (!response.ok) {
@@ -321,7 +321,7 @@ function App() {
       await Promise.all(
         stocks.map(async (stock) => {
           const response = await fetch(
-            `http://localhost:5000/api/watchlist/${stock.symbol}/check`,
+            `https://marketpulse-7ngo.onrender.com/api/watchlist/${stock.symbol}/check`,
             {
               method: "POST",
             }
@@ -339,7 +339,7 @@ function App() {
 
       // Reload watchlist
       const response = await fetch(
-        "http://localhost:5000/api/watchlist"
+        "https://marketpulse-7ngo.onrender.com/api/watchlist"
       );
 
       if (response.ok) {
