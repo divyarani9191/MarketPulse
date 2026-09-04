@@ -212,12 +212,7 @@ app.get("/api/watchlist/:symbol/analysis", async (req, res) => {
     });
   }
 });
-// Demo market refresh
-// Simulates a new market price so we can test
-// "meaningful change since last check".
 
-
-// Refresh stock with real Finnhub market data
 app.post("/api/watchlist/:symbol/refresh", async (req, res) => {
   try {
     const { symbol } = req.params;
@@ -251,15 +246,8 @@ app.post("/api/watchlist/:symbol/refresh", async (req, res) => {
       });
     }
 
-    // Save current values before updating them
-    stock.previousPrice = stock.price;
-    stock.previousChange = stock.change;
-
-    // Update with REAL market data
     stock.price = marketData.c;
     stock.change = marketData.dp;
-
-    stock.lastCheckedAt = new Date();
 
     await stock.save();
 
