@@ -21,6 +21,8 @@ MarketPulse combines a **React frontend**, **Node.js/Express backend**, **MongoD
 * 🟢 Show market data update time
 * ⚠️ Handle unavailable or stale market data
 * 💾 Persistent watchlist storage using MongoDB
+* 🎨 Clean and responsive dashboard UI
+* 📱 Responsive layout for different screen sizes
 
 ---
 
@@ -77,6 +79,28 @@ MarketPulse/
 ```
 
 ---
+---
+
+## 🎨 Dashboard
+
+MarketPulse provides a clean and responsive dashboard designed for quick stock monitoring.
+
+The dashboard includes:
+
+* 👋 Time-based greeting
+* 📊 Watchlist summary
+* 🚨 Needs Attention section
+* 🔄 Refresh Market action
+* ✅ Mark as Checked action
+* 🔎 Stock search and add functionality
+* 📈 Current price and percentage change
+* 🕒 Market update timestamps
+* ⚠️ Market data availability warnings
+
+The interface is designed to make important stock movements easy to identify at a glance.
+## 📸 Dashboard Preview
+
+![MarketPulse Dashboard](./screenshot/Dashboard.png)
 
 ## 🔄 How MarketPulse Works
 
