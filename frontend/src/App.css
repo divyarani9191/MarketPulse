@@ -1,0 +1,563 @@
+#root {
+  min-height: 100vh;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.app {
+  min-height: 100vh;
+  background: #f6f7f9;
+  color: #17191c;
+}
+
+/* Navbar */
+
+.navbar {
+  height: 72px;
+  background: white;
+  border-bottom: 1px solid #e7e8eb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 6%;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.logo-icon {
+  width: 32px;
+  height: 32px;
+  background: #17191c;
+  color: white;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.market-status {
+  font-size: 13px;
+  color: #656b73;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #20a464;
+}
+
+.profile {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #eceef1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+/* Main */
+
+.main-content {
+  max-width: 1180px;
+  margin: auto;
+  padding: 55px 25px 80px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 35px;
+}
+
+.eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  color: #777d85;
+  margin-bottom: 8px;
+}
+
+.page-header h1 {
+  font-size: 34px;
+  letter-spacing: -1px;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  color: #70757d;
+  font-size: 15px;
+}
+
+.add-button {
+  border: none;
+  background: #17191c;
+  color: white;
+  padding: 13px 20px;
+  border-radius: 9px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.add-button:hover {
+  opacity: 0.88;
+}
+
+/* Summary */
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 48px;
+}
+
+.summary-card {
+  background: white;
+  border: 1px solid #e6e8eb;
+  border-radius: 13px;
+  padding: 22px;
+}
+
+.summary-card p {
+  color: #727780;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+
+.summary-card h2 {
+  font-size: 27px;
+  margin-bottom: 6px;
+}
+
+.summary-card span {
+  color: #8a8f96;
+  font-size: 12px;
+}
+
+.summary-card.attention {
+  border-color: #eadfbe;
+}
+
+/* Sections */
+
+.section {
+  margin-bottom: 45px;
+}
+
+.section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.section-heading h2 {
+  font-size: 20px;
+  margin-bottom: 5px;
+}
+
+.section-heading p {
+  color: #7a7f87;
+  font-size: 13px;
+}
+
+.count-badge {
+  background: #eee;
+  border-radius: 20px;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Stock Cards */
+
+.stock-card {
+  background: white;
+  border: 1px solid #e5e7ea;
+  border-radius: 14px;
+  padding: 22px;
+  margin-bottom: 12px;
+  display: grid;
+  grid-template-columns: 1.3fr 1fr 2fr 0.5fr;
+  align-items: center;
+  gap: 20px;
+}
+
+.attention-card {
+  border-left: 4px solid #d49a20;
+}
+
+.stock-main {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.stock-main h3 {
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+
+.symbol {
+  color: #8a8f96;
+  font-size: 11px;
+}
+
+.stock-logo {
+  width: 43px;
+  height: 43px;
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: white;
+}
+
+.nvidia {
+  background: #1c9b55;
+}
+
+.tesla {
+  background: #d64242;
+}
+
+.apple {
+  background: #333;
+}
+
+.microsoft {
+  background: #2879d0;
+}
+
+.amazon {
+  background: #e38a25;
+}
+
+.stock-price strong {
+  display: block;
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+.positive {
+  color: #15945a;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.negative {
+  color: #d44848;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.change-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.change-info strong {
+  font-size: 13px;
+}
+
+.change-info p {
+  color: #777d85;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.change-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #eaf7ef;
+  color: #15945a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.change-icon.down {
+  background: #fcecec;
+  color: #d44848;
+}
+
+.attention-score {
+  text-align: right;
+}
+
+.attention-score span {
+  display: block;
+  font-size: 10px;
+  color: #888e95;
+  margin-bottom: 4px;
+}
+
+.attention-score strong {
+  font-size: 21px;
+}
+
+/* Watchlist */
+
+.watchlist-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 13px;
+}
+
+.mini-stock-card {
+  background: white;
+  border: 1px solid #e5e7ea;
+  border-radius: 13px;
+  padding: 17px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mini-stock-card .stock-logo {
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
+  font-size: 13px;
+}
+
+.mini-info {
+  flex: 1;
+}
+
+.mini-info h3 {
+  font-size: 13px;
+  margin-bottom: 3px;
+}
+
+.mini-info span {
+  font-size: 11px;
+  color: #8a8f96;
+}
+
+.mini-price {
+  text-align: right;
+}
+
+.mini-price strong {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 3px;
+}
+
+.mini-price span {
+  font-size: 11px;
+}
+
+/* Responsive */
+
+@media (max-width: 850px) {
+  .stock-card {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .watchlist-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .navbar {
+    padding: 0 20px;
+  }
+
+  .market-status {
+    display: none;
+  }
+
+  .page-header {
+    align-items: flex-start;
+    gap: 20px;
+    flex-direction: column;
+  }
+
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stock-card {
+    grid-template-columns: 1fr;
+  }
+
+  .attention-score {
+    text-align: left;
+  }
+}
+/* Search */
+
+.search-section {
+  margin-top: -15px;
+  margin-bottom: 35px;
+  position: relative;
+  z-index: 10;
+}
+
+.search-box {
+  background: white;
+  border: 1px solid #dfe2e6;
+  border-radius: 12px;
+  min-height: 54px;
+  display: flex;
+  align-items: center;
+  padding: 0 15px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+}
+
+.search-icon {
+  font-size: 24px;
+  color: #777d85;
+  margin-right: 10px;
+}
+
+.search-box input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  color: #17191c;
+}
+
+.search-box input::placeholder {
+  color: #9ba0a6;
+}
+
+.close-search {
+  border: none;
+  background: transparent;
+  font-size: 24px;
+  color: #777d85;
+  cursor: pointer;
+}
+
+.search-results {
+  margin-top: 8px;
+  background: white;
+  border: 1px solid #e1e3e6;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.search-result {
+  padding: 15px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #eeeeef;
+}
+
+.search-result:last-child {
+  border-bottom: none;
+}
+
+.search-result:hover {
+  background: #fafafa;
+}
+
+.result-add-button,
+.added-button {
+  border: none;
+  border-radius: 8px;
+  padding: 8px 15px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.result-add-button {
+  background: #17191c;
+  color: white;
+  cursor: pointer;
+}
+
+.result-add-button:hover {
+  opacity: 0.85;
+}
+
+.added-button {
+  background: #eef0f2;
+  color: #777d85;
+  cursor: default;
+}
+
+.no-results {
+  padding: 20px;
+  text-align: center;
+  color: #777d85;
+  font-size: 13px;
+}
+
+/* Google logo */
+
+.google {
+  background: #4285f4;
+}
+
+/* Remove button */
+
+.remove-button {
+  width: 26px;
+  height: 26px;
+  border: none;
+  background: transparent;
+  color: #a0a4aa;
+  font-size: 20px;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+.remove-button:hover {
+  background: #f0f1f2;
+  color: #d44848;
+}
+
+/* Empty State */
+
+.empty-state {
+  background: white;
+  border: 1px dashed #d8dadd;
+  border-radius: 13px;
+  padding: 45px 20px;
+  text-align: center;
+}
+
+.empty-state h3 {
+  margin-bottom: 8px;
+}
+
+.empty-state p {
+  color: #777d85;
+  font-size: 13px;
+}
