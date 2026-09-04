@@ -215,6 +215,9 @@ app.get("/api/watchlist/:symbol/analysis", async (req, res) => {
 // Demo market refresh
 // Simulates a new market price so we can test
 // "meaningful change since last check".
+
+
+// Refresh stock with real Finnhub market data
 app.post("/api/watchlist/:symbol/refresh", async (req, res) => {
   try {
     const { symbol } = req.params;
@@ -229,34 +232,94 @@ app.post("/api/watchlist/:symbol/refresh", async (req, res) => {
       });
     }
 
-    // Keep current price as the previous price
+    // Fetch latest market data from Finnhub
+    const response = await fetch(
+      `https://finnhub.io/api/v1/quote?symbol=${stock.symbol}&token=${process.env.FINNHUB_API_KEY}`
+    );
+
+    if (!response.ok) {
+      return res.status(502).json({
+        message: "Market data provider is unavailable",
+      });
+    }
+
+    const marketData = await response.json();
+
+    if (!marketData || typeof marketData.c !== "number") {
+      return res.status(404).json({
+        message: `No market data available for ${stock.symbol}`,
+      });
+    }
+
+    // Save current values before updating them
     stock.previousPrice = stock.price;
     stock.previousChange = stock.change;
 
-    // Simulate a market movement between -5% and +5%
-    const movement = (Math.random() * 10 - 5) / 100;
-
-    const newPrice = stock.price * (1 + movement);
-
-    // Calculate percentage movement
-    const newChange = movement * 100;
-
-    stock.price = Number(newPrice.toFixed(2));
-    stock.change = Number(newChange.toFixed(2));
+    // Update with REAL market data
+    stock.price = marketData.c;
+    stock.change = marketData.dp;
 
     stock.lastCheckedAt = new Date();
 
     await stock.save();
 
     res.json({
-      message: "Market data refreshed successfully",
+      message: "Real market data refreshed successfully",
       stock,
+      marketData: {
+        price: marketData.c,
+        changePercent: marketData.dp,
+        previousClose: marketData.pc,
+        high: marketData.h,
+        low: marketData.l,
+        open: marketData.o,
+      },
     });
   } catch (error) {
-    console.error("Error refreshing market data:", error.message);
+    console.error("Error refreshing real market data:", error.message);
 
     res.status(500).json({
       message: "Failed to refresh market data",
+    });
+  }
+});
+// Test real Finnhub market data
+app.get("/api/market/:symbol", async (req, res) => {
+  try {
+    const { symbol } = req.params;
+
+    const response = await fetch(
+      `https://finnhub.io/api/v1/quote?symbol=${symbol.toUpperCase()}&token=${process.env.FINNHUB_API_KEY}`
+    );
+
+    if (!response.ok) {
+      return res.status(response.status).json({
+        message: "Finnhub API request failed",
+      });
+    }
+
+    const data = await response.json();
+
+    if (!data || typeof data.c !== "number") {
+      return res.status(404).json({
+        message: "No market data found for this symbol",
+      });
+    }
+
+    res.json({
+      symbol: symbol.toUpperCase(),
+      price: data.c,
+      changePercent: data.dp,
+      previousClose: data.pc,
+      high: data.h,
+      low: data.l,
+      open: data.o,
+    });
+  } catch (error) {
+    console.error("Finnhub error:", error.message);
+
+    res.status(500).json({
+      message: "Unable to fetch market data",
     });
   }
 });
