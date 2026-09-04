@@ -67,6 +67,18 @@ function App() {
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
 
+  const currentHour = new Date().getHours();
+
+  let greeting;
+
+  if (currentHour >= 5 && currentHour < 12) {
+    greeting = "Good morning 🌅";
+  } else if (currentHour >= 12 && currentHour < 17) {
+    greeting = "Good afternoon ☀️";
+  } else {
+    greeting = "Good evening 🌙";
+  }
+
   // Load watchlist from MongoDB
   useEffect(() => {
     fetch("http://localhost:5000/api/watchlist")
@@ -462,7 +474,7 @@ function App() {
             </p>
 
             <h1>
-              Good afternoon 👋
+              {greeting} 👋
             </h1>
 
             <p className="subtitle">
