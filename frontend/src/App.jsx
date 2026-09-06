@@ -392,15 +392,18 @@ function App() {
   if (!watchlist.length) return "Not yet";
 
   const latest = watchlist
-    .filter(stock => stock.lastCheckedAt)
-    .sort(
-      (a, b) =>
-        new Date(b.lastCheckedAt) - new Date(a.lastCheckedAt)
-    )[0];
+    .filter(stock => stock.lastCheckedAt || stock.marketUpdatedAt)
+    .sort((a, b) => {
+      const dateA = new Date(a.lastCheckedAt || a.marketUpdatedAt);
+      const dateB = new Date(b.lastCheckedAt || b.marketUpdatedAt);
+      return dateB - dateA;
+    })[0];
 
   if (!latest) return "Not yet";
 
-  const date = new Date(latest.lastCheckedAt);
+  const date = new Date(
+    latest.lastCheckedAt || latest.marketUpdatedAt
+  );
 
   return date.toLocaleString("en-IN", {
     day: "2-digit",
