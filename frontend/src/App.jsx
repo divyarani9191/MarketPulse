@@ -388,45 +388,29 @@ function App() {
   };
 
   // Format last checked time
-  const getLastUpdatedText = () => {
-    const latestStock = getLatestCheckedStock();
+  function getLastUpdatedText() {
+  if (!watchlist.length) return "Not yet";
 
-    if (!latestStock) {
-      return {
-        time: "--",
-        symbol: "Not checked yet",
-      };
-    }
+  const latest = watchlist
+    .filter(stock => stock.lastCheckedAt)
+    .sort(
+      (a, b) =>
+        new Date(b.lastCheckedAt) - new Date(a.lastCheckedAt)
+    )[0];
 
-    const checkedTime = new Date(latestStock.lastCheckedAt);
-    const now = new Date();
+  if (!latest) return "Not yet";
 
-    const diffMinutes = Math.floor(
-      (now - checkedTime) / (1000 * 60)
-    );
+  const date = new Date(latest.lastCheckedAt);
 
-    let timeText;
-
-    if (diffMinutes < 1) {
-      timeText = "Just now";
-    } else if (diffMinutes === 1) {
-      timeText = "1 min ago";
-    } else if (diffMinutes < 60) {
-      timeText = `${diffMinutes} mins ago`;
-    } else {
-      const diffHours = Math.floor(diffMinutes / 60);
-
-      timeText =
-        diffHours === 1
-          ? "1 hour ago"
-          : `${diffHours} hours ago`;
-    }
-
-    return {
-      time: timeText,
-      symbol: `${latestStock.symbol} last checked`,
-    };
-  };
+  return date.toLocaleString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true
+  });
+}
 
   const lastUpdated = getLastUpdatedText();
 
