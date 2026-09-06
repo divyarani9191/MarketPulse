@@ -1731,86 +1731,96 @@ body {
 
 }
 /* =========================================================
-   BACKGROUND MARKET GRAPH DECORATIONS
+   MARKET BACKGROUND - SYMBOLS + GRAPHS
    ========================================================= */
 
 .app {
+  position: relative;
   isolation: isolate;
 }
 
-/* Increasing graph */
+/* ---------- Increasing side: $ + upward graph ---------- */
+
 .app::before {
-  content: "";
+  content: "$";
   position: fixed;
-  width: 360px;
-  height: 180px;
-  right: 2%;
+  right: 4%;
   top: 18%;
 
-  opacity: 0.10;
+  font-size: 180px;
+  font-weight: 900;
+  color: rgba(34, 197, 94, 0.025);
+
   pointer-events: none;
   z-index: 0;
 
+  /* Upward graph shape */
   background:
     linear-gradient(
-      135deg,
-      transparent 0 18%,
-      rgba(34, 197, 94, 0.9) 18.5% 19%,
-      transparent 19.5% 32%,
-      rgba(34, 197, 94, 0.9) 32.5% 33%,
-      transparent 33.5% 46%,
-      rgba(34, 197, 94, 0.9) 46.5% 47%,
-      transparent 47.5% 61%,
-      rgba(34, 197, 94, 0.9) 61.5% 62%,
-      transparent 62.5% 75%,
-      rgba(34, 197, 94, 0.9) 75.5% 76%,
-      transparent 76.5%
+      145deg,
+      transparent 0 15%,
+      rgba(34, 197, 94, 0.55) 15.5% 16%,
+      transparent 16.5% 30%,
+      rgba(34, 197, 94, 0.55) 30.5% 31%,
+      transparent 31.5% 45%,
+      rgba(34, 197, 94, 0.55) 45.5% 46%,
+      transparent 46.5% 60%,
+      rgba(34, 197, 94, 0.55) 60.5% 61%,
+      transparent 61.5% 75%,
+      rgba(34, 197, 94, 0.55) 75.5% 76%
     );
 
+  width: 360px;
+  height: 190px;
+
   clip-path: polygon(
-    0 75%,
-    15% 68%,
-    28% 72%,
-    42% 48%,
-    55% 55%,
-    70% 30%,
-    82% 38%,
+    0 78%,
+    15% 70%,
+    28% 74%,
+    42% 50%,
+    55% 56%,
+    70% 32%,
+    82% 40%,
     100% 8%,
     100% 100%,
     0 100%
   );
 
-  border-bottom:
-    1px solid rgba(34, 197, 94, 0.25);
+  opacity: 0.8;
 }
 
-/* Decreasing graph */
+
+/* ---------- Decreasing side: ↗ + downward graph ---------- */
+
 .app::after {
-  content: "";
+  content: "↗";
   position: fixed;
-  width: 340px;
-  height: 170px;
-  left: 1%;
+  left: 3%;
   bottom: 8%;
 
-  opacity: 0.08;
+  font-size: 190px;
+  font-weight: 900;
+  color: rgba(239, 68, 68, 0.025);
+
   pointer-events: none;
   z-index: 0;
+
+  width: 350px;
+  height: 190px;
 
   background:
     linear-gradient(
       45deg,
-      transparent 0 20%,
-      rgba(239, 68, 68, 0.9) 20.5% 21%,
-      transparent 21.5% 35%,
-      rgba(239, 68, 68, 0.9) 35.5% 36%,
-      transparent 36.5% 50%,
-      rgba(239, 68, 68, 0.9) 50.5% 51%,
+      transparent 0 18%,
+      rgba(239, 68, 68, 0.55) 18.5% 19%,
+      transparent 19.5% 34%,
+      rgba(239, 68, 68, 0.55) 34.5% 35%,
+      transparent 35.5% 50%,
+      rgba(239, 68, 68, 0.55) 50.5% 51%,
       transparent 51.5% 66%,
-      rgba(239, 68, 68, 0.9) 66.5% 67%,
+      rgba(239, 68, 68, 0.55) 66.5% 67%,
       transparent 67.5% 82%,
-      rgba(239, 68, 68, 0.9) 82.5% 83%,
-      transparent 83.5%
+      rgba(239, 68, 68, 0.55) 82.5% 83%
     );
 
   clip-path: polygon(
@@ -1826,12 +1836,12 @@ body {
     0 100%
   );
 
-  border-bottom:
-    1px solid rgba(239, 68, 68, 0.20);
+  opacity: 0.7;
 }
 
 
-/* Keep actual dashboard above decorations */
+/* Dashboard content graph ke upar rahe */
+
 .navbar,
 .main-content {
   position: relative;
