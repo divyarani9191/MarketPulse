@@ -388,7 +388,7 @@ function App() {
   };
 
   // Format last checked time
-  function getLastUpdatedText() {
+ function getLastUpdatedText() {
   if (!watchlist.length) return "Not yet";
 
   const latest = watchlist
