@@ -437,7 +437,7 @@ function App() {
       <nav className="navbar">
 
         <div className="logo">
-          <span className="logo-icon">◉</span>
+          <span className="logo-icon">↗</span>
           <span>MarketPulse</span>
         </div>
 

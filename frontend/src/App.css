@@ -1063,3 +1063,670 @@ body {
     padding: 14px;
   }
 }
+/* =========================================================
+   MARKETPULSE - PROFESSIONAL FINTECH THEME
+   ========================================================= */
+
+:root {
+  --mp-bg: #07111f;
+  --mp-card: #0d1b2a;
+  --mp-card-light: #102238;
+  --mp-border: rgba(148, 163, 184, 0.15);
+
+  --mp-text: #f8fafc;
+  --mp-muted: #8da0b5;
+  --mp-dim: #60758d;
+
+  --mp-green: #22c55e;
+  --mp-green-light: #4ade80;
+
+  --mp-red: #ef4444;
+  --mp-red-light: #fb7185;
+
+  --mp-yellow: #f59e0b;
+}
+
+
+/* =========================================================
+   MAIN BACKGROUND
+   ========================================================= */
+
+body {
+  background: var(--mp-bg);
+  color: var(--mp-text);
+}
+
+.app {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+
+  background:
+    radial-gradient(
+      circle at 8% 10%,
+      rgba(34, 197, 94, 0.09),
+      transparent 25%
+    ),
+    radial-gradient(
+      circle at 92% 5%,
+      rgba(59, 130, 246, 0.10),
+      transparent 25%
+    ),
+    linear-gradient(
+      rgba(255, 255, 255, 0.018) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.018) 1px,
+      transparent 1px
+    ),
+    var(--mp-bg);
+
+  background-size:
+    auto,
+    auto,
+    45px 45px,
+    45px 45px,
+    auto;
+}
+
+
+/* =========================================================
+   SUBTLE STOCK MARKET DECORATIONS
+   ========================================================= */
+
+.app::before {
+  content: "$";
+
+  position: fixed;
+  right: 4%;
+  top: 22%;
+
+  font-size: 180px;
+  font-weight: 900;
+
+  color: rgba(34, 197, 94, 0.025);
+
+  pointer-events: none;
+  z-index: 0;
+
+  transform: rotate(-8deg);
+}
+
+.app::after {
+  content: "↗";
+
+  position: fixed;
+  left: 3%;
+  bottom: 8%;
+
+  font-size: 190px;
+  font-weight: 900;
+
+  color: rgba(59, 130, 246, 0.025);
+
+  pointer-events: none;
+  z-index: 0;
+
+  transform: rotate(-12deg);
+}
+
+
+/* =========================================================
+   NAVBAR
+   ========================================================= */
+
+.navbar {
+  background: rgba(7, 17, 31, 0.90);
+
+  border-bottom:
+    1px solid rgba(148, 163, 184, 0.13);
+
+  box-shadow:
+    0 10px 35px rgba(0, 0, 0, 0.20);
+
+  backdrop-filter: blur(18px);
+
+  position: sticky;
+  z-index: 100;
+}
+
+.logo {
+  color: #f8fafc;
+}
+
+.logo-icon {
+  background:
+    linear-gradient(
+      135deg,
+      #16a34a,
+      #22c55e
+    );
+
+  color: white;
+
+  font-size: 20px;
+  font-weight: 900;
+
+  box-shadow:
+    0 0 20px rgba(34, 197, 94, 0.25);
+}
+
+.market-status {
+  color: #94a3b8;
+}
+
+.status-dot {
+  background: var(--mp-green);
+
+  box-shadow:
+    0 0 0 4px rgba(34, 197, 94, 0.10),
+    0 0 15px rgba(34, 197, 94, 0.60);
+}
+
+.profile {
+  background:
+    linear-gradient(
+      135deg,
+      #172a41,
+      #263c57
+    );
+
+  border:
+    1px solid rgba(148, 163, 184, 0.20);
+}
+
+
+/* =========================================================
+   MAIN CONTENT
+   ========================================================= */
+
+.main-content {
+  position: relative;
+  z-index: 2;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.page-header h1 {
+  color: #f8fafc;
+}
+
+.eyebrow {
+  color: #4ade80;
+}
+
+.subtitle {
+  color: #8da0b5;
+}
+
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+
+.refresh-button {
+  background: #101f31;
+
+  border:
+    1px solid #263b52;
+
+  color: #dbeafe;
+
+  box-shadow:
+    0 6px 18px rgba(0, 0, 0, 0.16);
+}
+
+.refresh-button:hover:not(:disabled) {
+  background: #15283e;
+  border-color: #3b536e;
+}
+
+.check-button {
+  background:
+    rgba(34, 197, 94, 0.08);
+
+  border:
+    1px solid rgba(34, 197, 94, 0.25);
+
+  color: #4ade80;
+}
+
+.check-button:hover:not(:disabled) {
+  background:
+    rgba(34, 197, 94, 0.15);
+}
+
+.add-button {
+  background:
+    linear-gradient(
+      135deg,
+      #16a34a,
+      #22c55e
+    );
+
+  color: white;
+
+  box-shadow:
+    0 8px 25px rgba(34, 197, 94, 0.20);
+}
+
+.add-button:hover:not(:disabled) {
+  box-shadow:
+    0 12px 32px rgba(34, 197, 94, 0.30);
+}
+
+
+/* =========================================================
+   SUMMARY CARDS
+   ========================================================= */
+
+.summary-card {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(16, 31, 49, 0.96),
+      rgba(8, 20, 34, 0.98)
+    );
+
+  border:
+    1px solid var(--mp-border);
+
+  box-shadow:
+    0 15px 35px rgba(0, 0, 0, 0.20);
+
+  color: var(--mp-text);
+}
+
+.summary-card:hover {
+  transform: translateY(-4px);
+
+  border-color:
+    rgba(74, 222, 128, 0.24);
+
+  box-shadow:
+    0 20px 45px rgba(0, 0, 0, 0.28);
+}
+
+.summary-card p {
+  color: #7f93aa;
+}
+
+.summary-card h2 {
+  color: #f8fafc;
+}
+
+.summary-card span {
+  color: #60758d;
+}
+
+
+/* =========================================================
+   ATTENTION CARD
+   ========================================================= */
+
+.summary-card.attention {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(62, 43, 17, 0.90),
+      rgba(20, 23, 29, 0.97)
+    );
+
+  border-color:
+    rgba(245, 158, 11, 0.22);
+}
+
+
+/* =========================================================
+   SECTION HEADINGS
+   ========================================================= */
+
+.section-heading h2 {
+  color: #eef5ff;
+}
+
+.section-heading p {
+  color: #71859b;
+}
+
+.count-badge {
+  background:
+    rgba(245, 158, 11, 0.10);
+
+  border-color:
+    rgba(245, 158, 11, 0.20);
+
+  color: #fbbf24;
+}
+
+
+/* =========================================================
+   ATTENTION STOCK CARDS
+   ========================================================= */
+
+.stock-card {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(15, 30, 48, 0.98),
+      rgba(8, 19, 33, 0.98)
+    );
+
+  border:
+    1px solid var(--mp-border);
+
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.20);
+}
+
+.stock-card:hover {
+  transform: translateY(-3px);
+
+  border-color:
+    rgba(74, 222, 128, 0.22);
+
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.28);
+}
+
+.attention-card {
+  border-left:
+    4px solid #f59e0b;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(66, 46, 17, 0.70),
+      rgba(13, 27, 42, 0.97) 38%
+    );
+}
+
+.stock-main h3 {
+  color: #eef5ff;
+}
+
+.symbol {
+  color: #6f8399;
+}
+
+.stock-price strong {
+  color: #f8fafc;
+}
+
+.change-info strong {
+  color: #dce8f5;
+}
+
+.change-info p {
+  color: #8194aa;
+}
+
+.attention-score span {
+  color: #71859b;
+}
+
+.attention-score strong {
+  color: #f8fafc;
+}
+
+
+/* =========================================================
+   STOCK LOGOS
+   ========================================================= */
+
+.stock-logo {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+
+/* =========================================================
+   PROFIT / LOSS
+   ========================================================= */
+
+.positive {
+  color: var(--mp-green-light);
+}
+
+.negative {
+  color: var(--mp-red-light);
+}
+
+.change-icon {
+  background:
+    rgba(34, 197, 94, 0.12);
+
+  color: var(--mp-green-light);
+
+  box-shadow:
+    0 0 15px rgba(34, 197, 94, 0.06);
+}
+
+.change-icon.down {
+  background:
+    rgba(239, 68, 68, 0.12);
+
+  color: var(--mp-red-light);
+
+  box-shadow:
+    0 0 15px rgba(239, 68, 68, 0.06);
+}
+
+
+/* =========================================================
+   WATCHLIST
+   ========================================================= */
+
+.mini-stock-card {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(15, 30, 48, 0.97),
+      rgba(8, 19, 33, 0.98)
+    );
+
+  border:
+    1px solid var(--mp-border);
+
+  box-shadow:
+    0 10px 25px rgba(0, 0, 0, 0.18);
+}
+
+.mini-stock-card:hover {
+  transform: translateY(-4px);
+
+  border-color:
+    rgba(74, 222, 128, 0.22);
+
+  box-shadow:
+    0 18px 35px rgba(0, 0, 0, 0.28);
+}
+
+.mini-info h3 {
+  color: #e8f0f8;
+}
+
+.mini-info span {
+  color: #6d8197;
+}
+
+.mini-price strong {
+  color: #f8fafc;
+}
+
+.market-updated {
+  color: #5f7389;
+}
+
+
+/* =========================================================
+   REMOVE BUTTON
+   ========================================================= */
+
+.remove-button {
+  color: #62758b;
+}
+
+.remove-button:hover {
+  background:
+    rgba(239, 68, 68, 0.10);
+
+  color: #fb7185;
+}
+
+
+/* =========================================================
+   SEARCH
+   ========================================================= */
+
+.search-box {
+  background:
+    rgba(13, 27, 42, 0.96);
+
+  border:
+    1px solid #263b52;
+
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.30);
+}
+
+.search-icon {
+  color: #647b93;
+}
+
+.search-box input {
+  color: #f8fafc;
+}
+
+.search-box input::placeholder {
+  color: #60758d;
+}
+
+.close-search {
+  color: #8295aa;
+}
+
+.close-search:hover {
+  background: #172a40;
+}
+
+.search-results {
+  background:
+    #0d1b2a;
+
+  border-color:
+    #263b52;
+
+  box-shadow:
+    0 20px 45px rgba(0, 0, 0, 0.35);
+}
+
+.search-result {
+  border-bottom-color:
+    rgba(148, 163, 184, 0.10);
+}
+
+.search-result:hover {
+  background:
+    #12253a;
+}
+
+.search-result h3 {
+  color: #e8f0f8;
+}
+
+.result-add-button {
+  background:
+    linear-gradient(
+      135deg,
+      #16a34a,
+      #22c55e
+    );
+}
+
+.result-add-button:hover {
+  background: #22c55e;
+}
+
+.added-button {
+  background: #1b2a3b;
+  color: #667a90;
+}
+
+.no-results {
+  color: #71859b;
+}
+
+
+/* =========================================================
+   WARNINGS
+   ========================================================= */
+
+.market-error,
+.market-stale-warning {
+  background:
+    rgba(245, 158, 11, 0.08);
+
+  border-color:
+    rgba(245, 158, 11, 0.22);
+
+  color: #fbbf24;
+}
+
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+
+.empty-state {
+  background:
+    rgba(13, 27, 42, 0.85);
+
+  border-color:
+    #263b52;
+}
+
+.empty-state h3 {
+  color: #e5edf6;
+}
+
+.empty-state p {
+  color: #71859b;
+}
+
+
+/* =========================================================
+   SUBTLE FINTECH GLOW
+   ========================================================= */
+
+.summary-card:nth-child(1):hover {
+  box-shadow:
+    0 18px 45px rgba(0, 0, 0, 0.28),
+    0 0 25px rgba(59, 130, 246, 0.05);
+}
+
+.summary-card:nth-child(3):hover {
+  box-shadow:
+    0 18px 45px rgba(0, 0, 0, 0.28),
+    0 0 25px rgba(34, 197, 94, 0.05);
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+  .app::before,
+  .app::after {
+    display: none;
+  }
+
+}
