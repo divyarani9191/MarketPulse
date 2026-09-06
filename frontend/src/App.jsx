@@ -630,9 +630,9 @@ function App() {
 
             <p>Last Updated</p>
 
-            <h2>{lastUpdated.time}</h2>
+            <h2>{lastUpdated}</h2>
 
-            <span>{lastUpdated.symbol}</span>
+            <span>{lastUpdated}</span>
 
           </div>
 
